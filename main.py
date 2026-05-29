@@ -3,12 +3,11 @@ from db.models import Race, Skill, Guild, Player
 
 
 def main() -> None:
-    # Open and parse the players data
     with open("players.json", "r") as file:
         players_data = json.load(file)
 
     for player_name, data in players_data.items():
-        # 1. Handle the Race (get existing or create a new one)
+        # 1. Handle the Race
         race_data = data["race"]
         race, _ = Race.objects.get_or_create(
             name=race_data["name"],
@@ -21,11 +20,11 @@ def main() -> None:
                 name=skill_data["name"],
                 defaults={
                     "bonus": skill_data["bonus"],
-                    "race": race  # Link it to the race instance we just got/created
+                    "race": race
                 }
             )
 
-        # 3. Handle the Guild (Guild can be null/absent for some players)
+        # 3. Handle the Guild
         guild = None
         guild_data = data.get("guild")
         if guild_data:
@@ -35,7 +34,6 @@ def main() -> None:
             )
 
         # 4. Handle the Player
-        # Using get_or_create here as well to prevent duplicate players if the script runs twice
         Player.objects.get_or_create(
             nickname=player_name,
             defaults={
